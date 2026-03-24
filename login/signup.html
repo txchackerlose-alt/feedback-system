@@ -679,7 +679,7 @@
               Welcome to Campus Tea.<br>Your account has been created.
             </div>
           </div>
-          <button class="btn-main" style="margin-top:28px;" onclick="handleLogin()">Login
+          <button class="btn-main" style="margin-top:28px;" onclick="switchTab('login')">
             Go to Sign In →
           </button>
         </div>
@@ -782,12 +782,9 @@ async function handleLogin() {
     alert(result.error);
     return;
   }
-
-  // 🔥 ADD HERE (STEP 8.4)
-  localStorage.setItem("token", result.token);
+ localStorage.setItem("token", result.token);
   localStorage.setItem("user", JSON.stringify(result.user));
 
-  // redirect
   const role = result.user.role;
 
   if (role === "student") {
@@ -800,23 +797,6 @@ async function handleLogin() {
     window.location.href = "admin.html";
   }
 }
-
-  // save user
-  localStorage.setItem("user", JSON.stringify(result.user));
-
-  // 🔥 ROLE BASED REDIRECT
-  const role = result.user.role;
-
-  if (role === "student") {
-    window.location.href = "student.html";
-  } else if (role === "teacher") {
-    window.location.href = "teacher.html";
-  } else if (role === "non-teaching") {
-    window.location.href = "nonteaching.html";
-  } else if (role === "admin") {
-    window.location.href = "admin.html";
-  }
-
     
 
     async function handleRegister() {
