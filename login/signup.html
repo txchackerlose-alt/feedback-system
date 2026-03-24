@@ -1,0 +1,844 @@
+
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campus Tea – Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── LIGHT TOKENS ── */
+    :root {
+      --bg:        #FDF6EC;
+      --bg-panel:  #FFFFFF;
+      --bg-input:  #FAF4EC;
+      --bg-card:   #FFF9F2;
+      --border:    rgba(180,140,90,0.22);
+      --border-in: rgba(180,140,90,0.30);
+      --text-h:    #2E1E0A;
+      --text-b:    #5A3E20;
+      --text-m:    #8A6A40;
+      --text-pl:   #B8A080;
+      --accent:    #6B9460;
+      --accent-lt: #EBF4E7;
+      --accent-dk: #4E7244;
+      --brown:     #7A5030;
+      --brown-lt:  #C8A882;
+      --gold:      #C8921A;
+      --shadow:    rgba(100,70,30,0.10);
+      --shadow-lg: rgba(100,70,30,0.16);
+      --nav-bg:    rgba(253,246,236,0.90);
+      --divider:   rgba(180,140,90,0.15);
+      --pill-bg:   #F0E8D8;
+      --pill-act:  #FFFFFF;
+      --err:       #C0402A;
+    }
+
+    /* ── DARK TOKENS ── */
+    html.dark {
+      --bg:        #181C1E;
+      --bg-panel:  #212629;
+      --bg-input:  #1E2327;
+      --bg-card:   #272D30;
+      --border:    rgba(130,165,140,0.18);
+      --border-in: rgba(130,165,140,0.28);
+      --text-h:    #EDF0EE;
+      --text-b:    #A8B8AD;
+      --text-m:    #6A8070;
+      --text-pl:   #4A5E54;
+      --accent:    #7FA68A;
+      --accent-lt: rgba(127,166,138,0.12);
+      --accent-dk: #8FB898;
+      --brown:     #C8D8CC;
+      --brown-lt:  #607870;
+      --gold:      #C8B870;
+      --shadow:    rgba(0,0,0,0.30);
+      --shadow-lg: rgba(0,0,0,0.50);
+      --nav-bg:    rgba(14,17,19,0.94);
+      --divider:   rgba(130,165,140,0.12);
+      --pill-bg:   #272D30;
+      --pill-act:  #2C3336;
+      --err:       #E07060;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-b);
+      transition: background 0.45s ease, color 0.45s ease;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.45s ease;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+    .nav-logo-icon {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--brown));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      transition: transform 0.3s ease;
+    }
+    .nav-logo:hover .nav-logo-icon { transform: rotate(-12deg) scale(1.08); }
+    .nav-logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--text-h);
+      transition: color 0.45s;
+    }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-back {
+      font-size: 13.5px; font-weight: 500;
+      color: var(--text-m);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 5px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--accent); }
+
+    /* theme toggle */
+    .theme-toggle {
+      width: 48px; height: 26px;
+      background: var(--brown-lt);
+      border-radius: 100px; border: none; cursor: pointer;
+      position: relative;
+      transition: background 0.4s ease;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+      box-shadow: 0 1px 5px rgba(0,0,0,0.18);
+    }
+    html.dark .theme-toggle { background: #3A4A44; }
+    html.dark .toggle-thumb { transform: translateX(22px); background: #181C1E; }
+
+    /* ── PAGE LAYOUT ── */
+    .page {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 20px 40px;
+      position: relative; z-index: 1;
+    }
+
+    /* Blobs */
+    .blob {
+      position: fixed; border-radius: 50%;
+      filter: blur(70px); pointer-events: none; z-index: 0;
+      transition: background 0.45s;
+    }
+    .blob-a {
+      width: 460px; height: 460px;
+      background: radial-gradient(circle, rgba(122,158,111,0.14) 0%, transparent 70%);
+      top: -120px; right: -120px;
+    }
+    .blob-b {
+      width: 340px; height: 340px;
+      background: radial-gradient(circle, rgba(200,168,130,0.18) 0%, transparent 70%);
+      bottom: -80px; left: -80px;
+    }
+    html.dark .blob-a { background: radial-gradient(circle, rgba(100,150,120,0.09) 0%, transparent 70%); }
+    html.dark .blob-b { background: radial-gradient(circle, rgba(80,120,100,0.09) 0%, transparent 70%); }
+
+    /* ── CARD ── */
+    .card {
+      width: 100%; max-width: 480px;
+      background: var(--bg-panel);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px var(--shadow-lg), 0 4px 16px var(--shadow);
+      overflow: hidden;
+      transition: background 0.45s ease, border 0.45s ease;
+      position: relative; z-index: 2;
+      animation: cardIn 0.55s cubic-bezier(.34,1.2,.64,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Card top accent strip */
+    .card-strip {
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { 0%{background-position:0% 0%} 100%{background-position:200% 0%} }
+
+    .card-body { padding: 36px 40px 40px; }
+
+    /* ── VIEWS (login / register / role-select) ── */
+    .view { display: none; }
+    .view.active {
+      display: block;
+      animation: fadeSlide 0.35s ease both;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── LOGO AREA ── */
+    .card-logo {
+      display: flex; flex-direction: column; align-items: center;
+      margin-bottom: 28px; text-align: center;
+    }
+    .card-logo-icon {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--brown));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin-bottom: 12px;
+      box-shadow: 0 6px 20px rgba(107,148,96,0.30);
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--text-h); line-height: 1.2;
+    }
+    .card-sub {
+      font-size: 13.5px; color: var(--text-m);
+      margin-top: 5px; line-height: 1.5;
+    }
+
+    /* ── PILL TABS (Login / Register) ── */
+    .pill-tabs {
+      display: flex;
+      background: var(--pill-bg);
+      border-radius: 100px;
+      padding: 4px; gap: 2px;
+      margin-bottom: 28px;
+      transition: background 0.45s;
+    }
+    .pill-tab {
+      flex: 1; padding: 9px 0;
+      border: none; border-radius: 100px;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px; font-weight: 600;
+      color: var(--text-m);
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+    }
+    .pill-tab.active {
+      background: var(--bg-panel);
+      color: var(--text-h);
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 12.5px; font-weight: 600;
+      color: var(--text-m);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    .form-input {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-in);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px; color: var(--text-h);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s, background 0.45s;
+    }
+    .form-input::placeholder { color: var(--text-pl); }
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(107,148,96,0.12);
+    }
+    html.dark .form-input:focus { box-shadow: 0 0 0 3px rgba(127,166,138,0.14); }
+
+    .input-wrap { position: relative; }
+    .input-wrap .form-input { padding-right: 44px; }
+    .input-icon {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px; color: var(--text-pl);
+      cursor: pointer; user-select: none;
+      transition: color 0.2s;
+    }
+    .input-icon:hover { color: var(--text-m); }
+
+    .form-error {
+      font-size: 12px; color: var(--err);
+      margin-top: 5px; display: none;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── FORGOT ── */
+    .form-footer-row {
+      display: flex; justify-content: flex-end;
+      margin-top: -8px; margin-bottom: 18px;
+    }
+    .forgot-link {
+      font-size: 12.5px; color: var(--accent);
+      text-decoration: none; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: var(--accent-dk); text-decoration: underline; }
+
+    /* ── BUTTONS ── */
+    .btn-main {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--accent-dk), var(--accent));
+      color: #fff;
+      border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.2px;
+      transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s, opacity 0.2s;
+      box-shadow: 0 6px 20px rgba(78,114,68,0.30);
+      position: relative; overflow: hidden;
+    }
+    .btn-main::after {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.1); opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(78,114,68,0.38); }
+    .btn-main:hover::after { opacity: 1; }
+    .btn-main:active { transform: translateY(0); }
+
+    .btn-ghost {
+      width: 100%; padding: 13px;
+      background: transparent;
+      border: 1.5px solid var(--border-in);
+      color: var(--text-b);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      margin-top: 10px;
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      background: var(--accent-lt);
+      transform: translateY(-1px);
+    }
+
+    /* ── DIVIDER ── */
+    .or-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: var(--text-pl);
+      font-size: 12px; font-weight: 500;
+    }
+    .or-divider::before, .or-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--divider);
+    }
+
+    /* ── ROLE SELECTION ── */
+    .role-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; margin-bottom: 24px;
+    }
+    .role-card {
+      padding: 18px 14px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.22s, background 0.22s, transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s;
+      position: relative; overflow: hidden;
+    }
+    .role-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent-lt), transparent);
+      opacity: 0; transition: opacity 0.25s;
+      border-radius: 14px;
+    }
+    .role-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-lt);
+      box-shadow: 0 0 0 3px rgba(107,148,96,0.14);
+      transform: translateY(-2px);
+    }
+    .role-card.selected::before { opacity: 1; }
+    html.dark .role-card.selected { box-shadow: 0 0 0 3px rgba(127,166,138,0.16); }
+
+    .role-icon {
+      font-size: 28px; display: block; margin-bottom: 8px;
+      transition: transform 0.2s;
+    }
+    .role-card:hover .role-icon { transform: scale(1.15); }
+    .role-card.selected .role-icon { transform: scale(1.1); }
+
+    .role-title {
+      font-size: 13px; font-weight: 600;
+      color: var(--text-h); display: block; margin-bottom: 2px;
+    }
+    .role-desc {
+      font-size: 11px; color: var(--text-m); line-height: 1.4;
+    }
+    .role-check {
+      position: absolute; top: 8px; right: 8px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent);
+      display: none; align-items: center; justify-content: center;
+      font-size: 10px; color: white;
+    }
+    .role-card.selected .role-check { display: flex; }
+
+    /* ── STEP INDICATOR ── */
+    .step-bar {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-bottom: 24px;
+    }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--divider);
+      transition: background 0.3s, width 0.3s, border-radius 0.3s;
+    }
+    .step-dot.active {
+      width: 24px; border-radius: 100px;
+      background: var(--accent);
+    }
+    .step-dot.done { background: var(--accent); opacity: 0.5; }
+
+    /* ── ROLE BADGE (shown in step 2 of register) ── */
+    .role-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--accent-lt);
+      border: 1px solid rgba(107,148,96,0.25);
+      color: var(--accent-dk);
+      font-size: 12.5px; font-weight: 600;
+      padding: 5px 13px; border-radius: 100px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .role-badge:hover { background: var(--border); }
+    html.dark .role-badge { border-color: rgba(127,166,138,0.2); color: var(--accent-dk); }
+
+    /* ── SUCCESS ── */
+    .success-wrap {
+      text-align: center; padding: 12px 0 4px;
+    }
+    .success-icon {
+      font-size: 52px; display: block;
+      animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--text-h); margin: 14px 0 6px;
+    }
+    .success-sub { font-size: 13.5px; color: var(--text-m); line-height: 1.6; }
+
+    /* ── MISC ── */
+    .switch-row {
+      text-align: center; margin-top: 20px;
+      font-size: 13px; color: var(--text-m);
+    }
+    .switch-link {
+      color: var(--accent); font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .switch-link:hover { color: var(--accent-dk); text-decoration: underline; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 13px; color: var(--text-m); cursor: pointer;
+      font-weight: 500; margin-bottom: 20px;
+      transition: color 0.2s;
+      border: none; background: none; font-family: 'DM Sans', sans-serif;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 520px) {
+      nav { padding: 0 20px; }
+      .card-body { padding: 28px 24px 32px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Blobs -->
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a class="nav-logo" href="campus-tea-hero.html">
+      <div class="nav-logo-icon">☕</div>
+      <span class="nav-logo-text">Campus Tea</span>
+    </a>
+    <div class="nav-right">
+      <a class="nav-back" href="#">← Back to Home</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <div class="toggle-thumb" id="toggleThumb">☀️</div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- PAGE -->
+  <div class="page">
+    <div class="card" id="mainCard">
+      <div class="card-strip"></div>
+      <div class="card-body">
+
+        <!-- ══ VIEW: LOGIN ══ -->
+        <div class="view active" id="viewLogin">
+          <div class="card-logo">
+            <div class="card-logo-icon">☕</div>
+            <div class="card-title">Welcome back</div>
+            <div class="card-sub">Sign in to your Campus Tea account</div>
+          </div>
+
+          <div class="pill-tabs">
+            <button class="pill-tab active" onclick="switchTab('login')">Sign In</button>
+            <button class="pill-tab" onclick="switchTab('register')">Create Account</button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" placeholder="you@campus.edu" id="loginEmail"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrap">
+              <input class="form-input" type="password" placeholder="Enter your password" id="loginPass"/>
+              <span class="input-icon" onclick="togglePass('loginPass', this)">👁</span>
+            </div>
+            <div class="form-error" id="loginErr">Invalid email or password. Please try again.</div>
+          </div>
+          <div class="form-footer-row">
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+          <button class="btn-main" onclick="handleLogin()">Sign In ☕</button>
+          <div class="or-divider">or</div>
+          <button class="btn-ghost" onclick="switchTab('register')">✦ Create a new account</button>
+
+          <div class="switch-row">
+            New here? <span class="switch-link" onclick="switchTab('register')">Create account →</span>
+          </div>
+        </div>
+
+        <!-- ══ VIEW: ROLE SELECT ══ -->
+        <div class="view" id="viewRole">
+          <button class="back-link" onclick="switchTab('register')">← Back</button>
+
+          <div class="step-bar">
+            <div class="step-dot done" id="sd1"></div>
+            <div class="step-dot active" id="sd2"></div>
+            <div class="step-dot" id="sd3"></div>
+          </div>
+
+          <div class="card-logo" style="margin-bottom:20px;">
+            <div class="card-title" style="font-size:22px;">Choose your role</div>
+            <div class="card-sub">Select how you'll use Campus Tea</div>
+          </div>
+
+          <div class="role-grid">
+            <div class="role-card" onclick="selectRole(this, 'Student')" data-role="Student">
+              <div class="role-check">✓</div>
+              <span class="role-icon">🎓</span>
+              <span class="role-title">Student</span>
+              <span class="role-desc">Give feedback on your classes</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Teacher')" data-role="Teacher">
+              <div class="role-check">✓</div>
+              <span class="role-icon">📚</span>
+              <span class="role-title">Teacher</span>
+              <span class="role-desc">View & act on student feedback</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Non-Teaching')" data-role="Non-Teaching">
+              <div class="role-check">✓</div>
+              <span class="role-icon">🏫</span>
+              <span class="role-title">Non-Teaching</span>
+              <span class="role-desc">Support staff & coordinators</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Admin')" data-role="Admin">
+              <div class="role-check">✓</div>
+              <span class="role-icon">🛡️</span>
+              <span class="role-title">Admin</span>
+              <span class="role-desc">Manage users & system settings</span>
+            </div>
+          </div>
+
+          <button class="btn-main" id="roleNextBtn" onclick="goToDetails()" disabled style="opacity:0.5;">
+            Continue →
+          </button>
+        </div>
+
+        <!-- ══ VIEW: REGISTER DETAILS ══ -->
+        <div class="view" id="viewRegister">
+          <button class="back-link" onclick="goBackToRole()">← Change role</button>
+
+          <div class="step-bar">
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot active"></div>
+          </div>
+
+          <div class="card-logo" style="margin-bottom:16px;">
+            <div class="card-title" style="font-size:22px;">Create account</div>
+            <div class="card-sub">Fill in your details below</div>
+          </div>
+
+          <div id="roleBadgeWrap" style="text-align:center; margin-bottom:20px;">
+            <span class="role-badge" onclick="goBackToRole()">
+              <span id="badgeIcon">🎓</span>
+              <span id="badgeLabel">Student</span>
+              <span style="opacity:0.5; font-size:10px;">✎ change</span>
+            </span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text" placeholder="Aarav" id="regFirst"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text" placeholder="Sharma" id="regLast"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" placeholder="you@campus.edu" id="regEmail"/>
+            <div class="form-error" id="emailErr">Please enter a valid email address.</div>
+          </div>
+
+          <!-- Role-specific field -->
+          <div class="form-group" id="extraFieldWrap">
+            <label class="form-label" id="extraFieldLabel">Student ID</label>
+            <input class="form-input" type="text" placeholder="e.g. STU-2024-001" id="extraField"/>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrap">
+              <input class="form-input" type="password" placeholder="Minimum 8 characters" id="regPass"/>
+              <span class="input-icon" onclick="togglePass('regPass', this)">👁</span>
+            </div>
+            <div class="form-error" id="passErr">Password must be at least 8 characters.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <div class="input-wrap">
+              <input class="form-input" type="password" placeholder="Re-enter password" id="regPass2"/>
+              <span class="input-icon" onclick="togglePass('regPass2', this)">👁</span>
+            </div>
+            <div class="form-error" id="pass2Err">Passwords do not match.</div>
+          </div>
+
+          <button class="btn-main" onclick="handleRegister()">Create Account 🍵</button>
+
+          <div class="switch-row">
+            Already have an account? <span class="switch-link" onclick="switchTab('login')">Sign in →</span>
+          </div>
+        </div>
+
+        <!-- ══ VIEW: SUCCESS ══ -->
+        <div class="view" id="viewSuccess">
+          <div class="success-wrap">
+            <span class="success-icon">🎉</span>
+            <div class="success-title">You're all brewed up!</div>
+            <div class="success-sub" id="successMsg">
+              Welcome to Campus Tea.<br>Your account has been created.
+            </div>
+          </div>
+          <button class="btn-main" style="margin-top:28px;" onclick="switchTab('login')">
+            Go to Sign In →
+          </button>
+        </div>
+
+      </div><!-- card-body -->
+    </div><!-- card -->
+  </div><!-- page -->
+
+  <script>
+    /* ── THEME TOGGLE ── */
+    const html = document.getElementById('htmlRoot');
+    const thumb = document.getElementById('toggleThumb');
+    if (localStorage.getItem('ct-theme') === 'dark') { html.classList.add('dark'); thumb.textContent = '🌙'; }
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      html.classList.toggle('dark');
+      const d = html.classList.contains('dark');
+      thumb.textContent = d ? '🌙' : '☀️';
+      localStorage.setItem('ct-theme', d ? 'dark' : 'light');
+    });
+
+    /* ── VIEWS ── */
+    let currentRole = null;
+
+    const roleConfig = {
+      'Student':     { icon: '🎓', field: 'Student ID',       placeholder: 'e.g. STU-2024-001' },
+      'Teacher':     { icon: '📚', field: 'Employee ID',      placeholder: 'e.g. TCH-2024-042' },
+      'Non-Teaching':{ icon: '🏫', field: 'Staff ID',         placeholder: 'e.g. STF-2024-010' },
+      'Admin':       { icon: '🛡️', field: 'Admin Access Code', placeholder: 'Enter access code' },
+    };
+
+    function showView(id) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function switchTab(tab) {
+      if (tab === 'login')    showView('viewLogin');
+      if (tab === 'register') showView('viewRole');
+      clearErrors();
+    }
+
+    function selectRole(card, role) {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      currentRole = role;
+      const btn = document.getElementById('roleNextBtn');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+
+    function goToDetails() {
+      if (!currentRole) return;
+      const cfg = roleConfig[currentRole];
+      document.getElementById('badgeIcon').textContent = cfg.icon;
+      document.getElementById('badgeLabel').textContent = currentRole;
+      document.getElementById('extraFieldLabel').textContent = cfg.field;
+      document.getElementById('extraField').placeholder = cfg.placeholder;
+      showView('viewRegister');
+    }
+
+    function goBackToRole() { showView('viewRole'); }
+
+    /* ── TOGGLE PASSWORD ── */
+    function togglePass(id, icon) {
+      const inp = document.getElementById(id);
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      icon.textContent = show ? '🙈' : '👁';
+    }
+
+    /* ── VALIDATION ── */
+    function clearErrors() {
+      document.querySelectorAll('.form-error').forEach(e => e.style.display = 'none');
+      document.querySelectorAll('.form-input').forEach(i => i.style.borderColor = '');
+    }
+
+    function showErr(id, inputId) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+      if (inputId) {
+        const inp = document.getElementById(inputId);
+        if (inp) inp.style.borderColor = 'var(--err)';
+      }
+    }
+async function handleLogin() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPass").value;
+
+  const res = await fetch("http://localhost:5000/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const result = await res.json();
+
+  if (result.error) {
+    alert(result.error);
+    return;
+  }
+
+  // 🔥 ADD HERE (STEP 8.4)
+  localStorage.setItem("token", result.token);
+  localStorage.setItem("user", JSON.stringify(result.user));
+
+  // redirect
+  const role = result.user.role;
+
+  if (role === "student") {
+    window.location.href = "student.html";
+  } else if (role === "teacher") {
+    window.location.href = "teacher.html";
+  } else if (role === "non-teaching") {
+    window.location.href = "nonteaching.html";
+  } else if (role === "admin") {
+    window.location.href = "admin.html";
+  }
+}
+
+  // save user
+  localStorage.setItem("user", JSON.stringify(result.user));
+
+  // 🔥 ROLE BASED REDIRECT
+  const role = result.user.role;
+
+  if (role === "student") {
+    window.location.href = "student.html";
+  } else if (role === "teacher") {
+    window.location.href = "teacher.html";
+  } else if (role === "non-teaching") {
+    window.location.href = "nonteaching.html";
+  } else if (role === "admin") {
+    window.location.href = "admin.html";
+  }
+
+    
+
+    async function handleRegister() {
+  const data = {
+    firstName: document.getElementById("regFirst").value,
+    lastName: document.getElementById("regLast").value,
+    email: document.getElementById("regEmail").value,
+    password: document.getElementById("regPass").value,
+    role: currentRole
+  };
+
+  const res = await fetch("http://localhost:5000/api/auth/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+  alert(result.message || result.error);
+}
+  </script>
+</body>
+</html>
