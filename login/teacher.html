@@ -902,7 +902,7 @@ function showToast(msg,em){
 
 async function loadFeedback() {
   try {
-    const res = await fetch("http://localhost:5000/api/feedback");
+    const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/feedback");
     const data = await res.json();
 
     console.log("Backend data:", data);

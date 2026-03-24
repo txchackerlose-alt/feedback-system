@@ -1193,7 +1193,7 @@ tb.addEventListener('click',()=>{
 
 async function updateStatus(id, newStatus) {
   try {
-    const res = await fetch(`http://localhost:5000/api/concerns/${id}`, {
+    const res = await fetch(`https://feedback-backend-qm8k.onrender.com/api/concerns/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
