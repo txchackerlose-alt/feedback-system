@@ -679,7 +679,7 @@
               Welcome to Campus Tea.<br>Your account has been created.
             </div>
           </div>
-          <button class="btn-main" style="margin-top:28px;" onclick="switchTab('login')">
+          <button class="btn-main" style="margin-top:28px;" onclick="handleLogin()">Login
             Go to Sign In →
           </button>
         </div>
@@ -768,7 +768,7 @@ async function handleLogin() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPass").value;
 
-  const res = await fetch("http://localhost:5000/api/auth/login", {
+  const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -828,7 +828,7 @@ async function handleLogin() {
     role: currentRole
   };
 
-  const res = await fetch("http://localhost:5000/api/auth/signup", {
+  const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/auth/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
