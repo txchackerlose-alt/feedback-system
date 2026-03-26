@@ -657,7 +657,8 @@ html.dark #toast{background:var(--bg-card2);color:var(--text-h);border:1px solid
       <a class="sidebar-item" id="sb-cocurr"><span class="s-icon">🏆</span>Co/Extra Curricular</a>
     </div>
     <div style="height:1px;background:var(--border);margin:8px 0 16px"></div>
-    <div class="sidebar-logout" onclick="showToast('Bye! 👋','🚪')"><span class="s-icon">🚪</span>Logout</div>
+    <div class="sidebar-logout" onclick="showToast('Bye! 👋','🚪')"><a href="signup.html"><span class="s-icon">🚪</span>Logout</div></a>
+
   </aside>
 
   <main>
@@ -1144,7 +1145,7 @@ async function submitConcern() {
     anonymous: document.getElementById("anonymousToggle").checked
   };
 
-  const res = await fetch("http://localhost:5000/api/concerns", {
+  const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/concerns", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -1226,7 +1227,7 @@ async function submitFeedback() {
     section: "A"
   };
 
-  const res = await fetch("http://localhost:5000/api/feedback", {
+  const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/feedback", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -1282,7 +1283,7 @@ function showToast(msg,em){
 async function loadMyConcerns() {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const res = await fetch(`http://localhost:5000/api/concerns/my/${user.id}`);
+  const res = await fetch(`https://feedback-backend-qm8k.onrender.com/api/concerns/my/${user.id}`);
   const data = await res.json();
 
   console.log("My concerns:", data);
