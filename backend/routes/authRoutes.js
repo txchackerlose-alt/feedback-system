@@ -34,6 +34,8 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("Login attempt:", email, password);
+
   try {
     const { data, error } = await supabase
       .from("users")
@@ -41,18 +43,20 @@ router.post("/login", async (req, res) => {
       .eq("email", email)
       .single();
 
+    console.log("DB user:", data);
+
     if (error || !data) {
       return res.status(400).json({ error: "User not found ❌" });
     }
 
-    // 🔥 compare hashed password
     const isMatch = await bcrypt.compare(password, data.password);
+
+    console.log("Password match:", isMatch);
 
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid password ❌" });
     }
 
-    // 🔥 create token
     const token = jwt.sign(
       { id: data.id, role: data.role },
       "SECRET_KEY",
