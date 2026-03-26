@@ -765,39 +765,51 @@
       }
     }
 async function handleLogin() {
+  console.log("Login clicked");
+
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPass").value;
 
-  const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const res = await fetch("https://feedback-backend-qm8k.onrender.com/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-  const result = await res.json();
+    const result = await res.json();
+    console.log("Response:", result);
 
-  if (result.error) {
-    alert(result.error);
-    return;
+    // 🔥 IMPORTANT CHECK
+    if (!res.ok) {
+      alert(result.error || "Login failed");
+      return;
+    }
+
+    // ✅ SAVE DATA
+    localStorage.setItem("token", result.token);
+    localStorage.setItem("user", JSON.stringify(result.user));
+
+    // 🔥 FIX ROLE CASE
+    const role = result.user.role.toLowerCase();
+
+    if (role === "student") {
+      window.location.href = "student.html";
+    } else if (role === "teacher") {
+      window.location.href = "teacher.html";
+    } else if (role === "non-teaching") {
+      window.location.href = "nonteaching.html";
+    } else if (role === "admin") {
+      window.location.href = "admin.html";
+    }
+
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Something went wrong");
   }
- localStorage.setItem("token", result.token);
-  localStorage.setItem("user", JSON.stringify(result.user));
-
-  const role = result.user.role.toLowerCase();
-
-  if (role === "student") {
-    window.location.href = "student.html";
-  } else if (role === "teacher") {
-    window.location.href = "teacher.html";
-  } else if (role === "non-teaching") {
-    window.location.href = "nonteaching.html";
-  } else if (role === "admin") {
-    window.location.href = "admin.html";
-  }
-}
-    
+} 
 
     async function handleRegister() {
   const data = {
